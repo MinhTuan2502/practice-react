@@ -6,6 +6,7 @@ import _ from 'lodash';
 import { fetchAllUser } from '../services/UserServices';
 import ModalAddNew from './ModalAddNew';
 import ModalEditUser from './ModalEditUser';
+import ModalConfirm from './ModalConfirm';
 
 const TableUsers = (props) => {
 
@@ -13,12 +14,15 @@ const TableUsers = (props) => {
     const [totalUsers, setTotalUsers] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
     const [dataUserEdit, setDataUserEdit] = useState({});
+    const [dataUserDelete, setDataUserDelete] = useState({});
 
     const [isShowModalAddNew, setIsShowModalAddNew] = useState(false);
     const [isShowModalEdit, setIsShowModalEdit] = useState(false);
+    const [isShowModalDelete, setIsShowModalDelete] = useState(false);
 
     const handleClose = () => {
         setIsShowModalAddNew(false);
+        setIsShowModalDelete(false);
         setIsShowModalEdit(false);
     }
 
@@ -36,6 +40,17 @@ const TableUsers = (props) => {
     const handleEditUser = (user) => {
         setDataUserEdit(user);
         setIsShowModalEdit(true)
+    }
+
+    const handleDeleteUser = (user) => {
+        setIsShowModalDelete(true);
+        setDataUserDelete(user)
+    }
+
+    const handleDeleteUserFromModal = (user) => {
+        let cloneListUsers = _.cloneDeep(listUsers);
+        cloneListUsers = cloneListUsers.filter(item => item.id !== user.id)
+        setListUsers(cloneListUsers);
     }
 
     useEffect(() => {
@@ -90,7 +105,11 @@ const TableUsers = (props) => {
                                 onClick={() => handleEditUser(item)}>
                                     Edit
                             </button>
-                            <button className='btn btn-danger'>Delete</button>
+                            <button 
+                                onClick={() => handleDeleteUser(item)}
+                                className='btn btn-danger'>
+                                    Delete
+                            </button>
                         </td>
                     </tr>
                 )
@@ -127,6 +146,12 @@ const TableUsers = (props) => {
         dataUserEdit={dataUserEdit}
         handleClose={handleClose}
         handleEditUserFromModal={handleEditUserFromModal}
+    />
+    <ModalConfirm 
+        show={isShowModalDelete}
+        handleClose={handleClose}
+        dataUserDelete={dataUserDelete}
+        handleDeleteUserFromModal={handleDeleteUserFromModal}
     />
     </>)
 } 
