@@ -13,7 +13,7 @@ const ModalConfirm = (props) => {
             handleClose();
             handleDeleteUserFromModal(dataUserDelete);
         } else {
-            toast.error("Delete user error")
+            toast.error("Delete user error");
         }
     }
 
