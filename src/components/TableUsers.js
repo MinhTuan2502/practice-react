@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Table from 'react-bootstrap/Table';
 import ReactPaginate from 'react-paginate';
 import _ from 'lodash';
+import { CSVLink, CSVDownload } from "react-csv";
 
 import { fetchAllUser } from '../services/UserServices';
 import ModalAddNew from './ModalAddNew';
@@ -18,6 +19,7 @@ const TableUsers = (props) => {
     const [dataUserDelete, setDataUserDelete] = useState({});
     const [sortBy, setSortBy] = useState('asc');
     const [sortField, setSortField] = useState('id');
+    const [dataExport, setDataExport] = useState([]);
 
     const [isShowModalAddNew, setIsShowModalAddNew] = useState(false);
     const [isShowModalEdit, setIsShowModalEdit] = useState(false);
@@ -84,14 +86,47 @@ const TableUsers = (props) => {
         getUsers(+event.selected + 1);
     }
 
+    const getUsersExport = (event, done) => {
+        let result = [];
+        if (listUsers && listUsers.length > 0) {
+            result.push(["Id", "Email", "First Name", "Last Name"]);
+            listUsers.map((item, index) => {
+                let arr = []
+                arr[0] = item.id;
+                arr[1] = item.email;
+                arr[2] = item.first_name;
+                arr[3] = item.last_name;
+                result.push(arr);
+            })
+
+            setDataExport(result);
+            done();
+        }
+    }
+
     return (
     <>
         <div className='my-3 add-new'>
               <span><b>List Users:</b></span>
-              <button className='btn btn-success' 
-                onClick={() => setIsShowModalAddNew(true)}>
-                  Add new user
-              </button>
+              <div className='group-btn'>
+                <label htmlFor='test' className='btn btn-warning'>
+                    <i className="fa-solid fa-file-import"></i> Import
+                </label>
+                <input id='test' type='file' hidden/>
+
+                <CSVLink 
+                    filename={"users.csv"}
+                    className="btn btn-primary"
+                    data={dataExport}
+                    asyncOnClick={true}
+                    onClick={getUsersExport}
+                > <i className="fa-solid fa-file-arrow-down"></i> Export</CSVLink>
+                <button className='btn btn-success' 
+                    onClick={() => setIsShowModalAddNew(true)}>
+                    <i className="fa-solid fa-circle-plus"></i>
+                    Add new
+                </button>
+              </div>
         </div>
     <Table striped bordered hover>
       <thead>
